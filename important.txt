@@ -1,0 +1,131 @@
+to create laravel project    ( composer create-project laravel/laravel project_name ) 
+to run laravel project       ( php artisan serve ) 
+to make controller           ( php artisan make:controller UserController )
+to make resource controller  ( php artisan make:controller UserController --resource )
+/***********
+                what is different between controller resource and controller normalize?
+                    - controller resource make default crud function ( create - edit - update - delete )
+***********/
+
+to make invoice controller   ( php artisan make:controller UserProfileController -i ) => to make single action controller or single action method
+
+
+to connect mysql database by laravel and make tables between them :-
+    1 - go to .env and change DB_DATABASE from "laravel" to "database name"
+    2 - open terminal and run this ( php artisan migrate )
+
+If you would like to see which migrations have run thus far, you may use this (php artisan migrate:status)
+
+to create table in laravel (php artisan make:migration create_name_table_table)
+
+to added table from laravel to mysql database write this code in terminal (php artisan migrate)
+
+to roll back ( the latest ) migration operation use this code (php artisan migrate:rollback)
+
+to roll back a ( limited number ) of migration operation use this code (php artisan migrate:rollback --step=5)
+
+to roll back but i don't know the step to use rollback in this case should use reset (php artisan migrate:reset)
+
+
+to make rollback and enter data in database but if use this will delete all data from database (php artisan migrate:refresh)
+
+to  drop all tables and migrated another again in database  use this code (php artisan migrate:fresh)
+
+
+to add column in database (php artisan make:migration add_column-name_to_table-name)
+
+
+/////////////////////////           Foreign key           /////////////////////////
+
+        1- 
+            $table->unsignedBigInteger("column_name");
+            $table->foreign("column_name")->references("column inside another table")->on("table_name");
+
+        2- 
+            $table->foreignId("user_id")->constrained("table_name");
+
+    if user added any posts and you delete this user from database if you want deleted the user's posts
+            $table->foreignId("user_id")->constrained("table_name")->cascadeOnDelete();    
+
+
+to insert data in database by laravel   
+        DB::table("table_name")->insert([
+            "title"=>$my_request->title,
+            "body"=>$my_request->body
+        ]);
+
+to select or to show data from database by laravel
+
+        $posts = DB::table("posts")->get();
+        return view("posts.index", compact("posts"));
+
+
+        <tbody>
+            @foreach($posts as $post)
+                <tr>
+                    <th scope="row">{{$post->id}}</th>
+                    <td>{{$post->title}}</td>
+                    <td>{{$post->body}}</td>
+                </tr>
+            @endforeach
+        </tbody>
+
+
+to get data from database by id
+            1-
+                Route::get("post/edit/{id}", [PostController::class, "edit"])->name("post.edit");
+
+            2-
+                public function edit($id) {
+                    $post = DB::table("posts")->where("id", $id)->first();
+                    return view("posts.edit", compact("post"));
+                }
+            3-
+                <a class="btn btn-secondary" href="{{route('post.edit', $post->id)}}" role="button">Edit</a>
+
+
+
+to update the data from database by laravel
+
+            1-
+                // this is to make update route by put, but if you want use this case you should run this code inside form (@method("put"));
+                    Route::put("post/update/{id}", "update")->name("post.update");
+
+            2-
+                public function update(Request $my_request, $id) {
+                    $post = DB::table("posts")->where("id", $id)->update([
+                        "title"=>$my_request->title,
+                        "body"=>$my_request->body
+                    ]);
+                    return redirect()->route("posts");
+                }
+
+
+to delete the data from database by laravel
+
+            1-
+                    Route::get("post/delete/{id}", "delete")->name("post.delete");
+
+            2-
+                    public function delete($id) {
+                    DB::table("posts")->where("id", $id)->delete();
+                    return redirect()->route("posts");
+                }
+
+to delete ( all ) data from database by laravel
+                    public function deleteAll() {
+                    DB::table("posts")->delete();
+                    return redirect()->route("posts");
+                }
+
+to delete ( all ) data from database by laravel but in this case the id will counter from 1
+                    public function deleteAllTruncate() {
+                    DB::table("posts")->truncate();
+                    return redirect()->route("posts");
+                }
+
+to make model (php artisan make:model model_name)
+
+to make model and create table in database at the same time (php artisan make:model model_name --migration)
+
+to make model and create table and make controller at the same time (php artisan make:model model_name --migration --controller) 
